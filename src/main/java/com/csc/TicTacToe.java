@@ -1,3 +1,4 @@
+package com.csc;
 import java.util.Scanner;
 import java.util.Random;
 
@@ -14,16 +15,25 @@ public class TicTacToe
         
         printBoard(board);
         //we need a way to take user input
-        //Scanner scanner = new Scanner(System.in);
         //human input
+        //int playerNum;
+        //System.out.println("Pick either 1 or 2: ");
+        //playerNum = scanner.nextInt();
+
         while (true){
-            playerTurn(board, scanner);
-            isGameFinished(board);
+            playerOneTurn(board, scanner);
+            if (isGameFinished(board)){
+                break;
+            }
             printBoard(board);
-            computerTurn(board);
+
+            playerTwoTurn(board, scanner);
+            if(isGameFinished(board)){
+                break;
+            }
             printBoard(board);
         }
-        //scanner.close();
+        scanner.close();
     }
 
     private static void placeMove(char[][] board, String position, char symbol)
@@ -67,39 +77,39 @@ public class TicTacToe
                 break;
             
             default:
-                System.out.println("You suck");
+                System.out.println("You suck.");
         }
     }
 
-    private static boolean isValidMove(char[][] board, int position)
+    private static boolean isValidMove(char[][] board, String position)
     {
         switch(position)
         {
-            case 1: 
+            case "1": 
                 return (board[0][0] == ' '); //this returns the truth value of this statement!
             
-            case 2:
+            case "2":
                 return (board[0][1] == ' ');
             
-            case 3:
+            case "3":
                 return (board[0][2] == ' ');
             
-            case 4:
+            case "4":
                 return (board[1][0] == ' ');
             
-            case 5:
+            case "5":
                 return (board[1][1] == ' ');
             
-            case 6:
+            case "6":
                 return (board[1][2] == ' ');
             
-            case 7:
+            case "7":
                 return (board[2][0] == ' ');
             
-            case 8:
+            case "8":
                 return (board[2][1] == ' ');
             
-            case 9:
+            case "9":
                 return (board[2][2] == ' ');
             
             default:
@@ -107,13 +117,13 @@ public class TicTacToe
         }
     }
 
-    private static void playerTurn(char[][] board, Scanner scanner)
+    private static void playerOneTurn(char[][] board, Scanner scanner)
     {
         String userInput;
         while (true){
             System.out.println("Where would you like to play? (1-9)");
-            userInput = scanner.nextln();
-            if(isValidMove(board, Integer.parseInt(userInput))){
+            userInput = scanner.nextLine();
+            if(isValidMove(board, userInput)){
                 break;
             } else {
                 System.out.println(userInput + " is not a valid position! Try again: ");
@@ -122,23 +132,76 @@ public class TicTacToe
         placeMove(board, userInput, 'X');
     }
 
-    private static void computerTurn(char[][] board)
+    private static void playerTwoTurn(char[][] board, Scanner scanner)
+    {
+        String userInput;
+        while (true) {
+            System.out.println("Where would you like to play? (1-9)");
+            userInput = scanner.nextLine();
+            if(isValidMove(board, userInput)){
+                break;
+            }
+            else {
+                System.out.println(userInput + " is not a valid position! Try again: ");
+            }
+        }
+        placeMove(board, userInput, 'O');
+    }
+
+    /**private static void computerTurn(char[][] board)
     {
         Random rand = new Random();
         int computerMove;
         while (true) {
             computerMove = rand.nextInt(9) + 1;
-            if (isValidMove(board, computerMove)){
+            if (isValidMove(board, Integer.toString(computerMove))){
                 break;
             }
         }
         System.out.println("Computer chose " + computerMove);
         placeMove(board, Integer.toString(computerMove), 'O');
+    }*/
+
+    private static boolean hasContestantWon(char[][] board, char symbol)
+    {
+        if((board[0][0] == symbol && board [0][1] == symbol && board [0][2] == symbol) || 
+           (board[1][0] == symbol && board [1][1] == symbol && board [1][2] == symbol) ||
+           (board[2][0] == symbol && board [2][1] == symbol && board [2][2] == symbol) ||
+           
+           (board[0][0] == symbol && board [1][0] == symbol && board [2][0] == symbol) || 
+           (board[0][1] == symbol && board [1][1] == symbol && board [2][1] == symbol) ||
+           (board[0][2] == symbol && board [1][2] == symbol && board [2][2] == symbol) ||
+           
+           (board[0][0] == symbol && board [1][1] == symbol && board [2][2] == symbol) || 
+           (board[0][2] == symbol && board [1][1] == symbol && board [2][0] == symbol) ) {
+        
+            return true;
+           }
+           return false;
     }
 
-    private static void isGameFinished(char[][] board)
+    private static boolean isGameFinished(char[][] board)
     {
-        
+        if(hasContestantWon(board, 'X')) {
+            printBoard(board);
+            System.out.println("Player 1 wins!");
+            return true;
+        }
+        else if (hasContestantWon(board, 'O')) {
+            System.out.println("Player 2 wins!");
+            return true;
+        }
+
+        for (int i=0; i < board.length; i++){
+            for (int j=0; j < board[i].length; j++){
+                if(board[i][j] == ' '){
+                    return false;
+                }
+            }
+        }
+        printBoard(board);
+        System.out.println("The game ended in a tie!");
+        return true;
     }
 
     private static void printBoard(char[][] board)
