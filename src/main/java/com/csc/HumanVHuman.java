@@ -84,36 +84,52 @@ public class HumanVHuman
         }
     }
 
-
-    private void playerOneTurn(char[][] board, Scanner scanner)
+    private char getUserInput(Scanner scanner)
     {
         String userInput;
+        while(true) {
+            System.out.println("Enter a single character (no whitespace!)");
+            userInput = scanner.nextLine();
+            if(userInput.length() == 1 && !Character.isWhitespace(userInput.charAt(0))) {
+                return userInput.charAt(0);
+            } else {
+                System.out.println("Invalid character! Try again: ");
+            }
+        }
+    }
+
+    private void playerOneTurn(char[][] board, Scanner scanner, char playerOneChar)
+    {
+        String userInput;
+
         while (true){
             System.out.println("Where would you like to play? (1-9)");
             userInput = scanner.nextLine();
             if(isValidMove(board, userInput)){
+                placeMove(board, userInput, playerOneChar);
                 break;
             } else {
                 System.out.println(userInput + " is not a valid position! Try again: ");
             }
         }
-        placeMove(board, userInput, 'X');
     }
 
-    private void playerTwoTurn(char[][] board, Scanner scanner)
+    private void playerTwoTurn(char[][] board, Scanner scanner, char playerTwoChar)
     {
         String userInput;
+
         while (true) {
             System.out.println("Where would you like to play? (1-9)");
             userInput = scanner.nextLine();
             if(isValidMove(board, userInput)){
+                placeMove(board, userInput, playerTwoChar);
                 break;
             }
             else {
                 System.out.println(userInput + " is not a valid position! Try again: ");
             }
         }
-        placeMove(board, userInput, 'O');
+        placeMove(board, userInput, playerTwoChar);
     }
 
     private static boolean hasContestantWon(char[][] board, char symbol)
@@ -134,14 +150,14 @@ public class HumanVHuman
            return false;
     }
 
-    private boolean isGameFinished(char[][] board)
+    private boolean isGameFinished(char[][] board, char playerOneChar, char playerTwoChar)
     {
-        if(hasContestantWon(board, 'X')) {
+        if(hasContestantWon(board, playerOneChar)) {
             printBoard(board);
             System.out.println("Player 1 wins!");
             return true;
         }
-        else if (hasContestantWon(board, 'O')) {
+        else if (hasContestantWon(board, playerTwoChar)) {
             System.out.println("Player 2 wins!");
             return true;
         }
@@ -169,29 +185,26 @@ public class HumanVHuman
 
     public void Start()
     {
-        //we must print a board first
-        //three rows of three characters apiece
         Scanner scanner = new Scanner(System.in); 
         char[][] board = {{' ', ' ', ' '}, 
                           {' ', ' ', ' '}, 
                           {' ', ' ', ' '}}; //this is what our board looks like
         
+        char playerOneChar = getUserInput(scanner);
+
+        char playerTwoChar = getUserInput(scanner);
+
         printBoard(board);
-        //we need a way to take user input
-        //human input
-        //int playerNum;
-        //System.out.println("Pick either 1 or 2: ");
-        //playerNum = scanner.nextInt();
 
         while (true){
-            playerOneTurn(board, scanner);
-            if (isGameFinished(board)){
+            playerOneTurn(board, scanner, playerOneChar);
+            if (isGameFinished(board, playerOneChar, playerTwoChar)){
                 break;
             }
             printBoard(board);
 
-            playerTwoTurn(board, scanner);
-            if(isGameFinished(board)){
+            playerTwoTurn(board, scanner, playerTwoChar);
+            if(isGameFinished(board, playerOneChar, playerTwoChar)){
                 break;
             }
             printBoard(board);
